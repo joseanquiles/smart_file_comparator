@@ -59,8 +59,8 @@ public class SFCEngine {
 			if (!f2.exists()) {
 				deleted.add(f1);
 			} else {
-				common1.add(f1);
-				common2.add(f2);
+				//common1.add(f1);
+				//common2.add(f2);
 			}
 		}
 
@@ -74,14 +74,19 @@ public class SFCEngine {
 		}
 
 		// STEP 3: files in both, left and right
-		for (int i = 0; i < common1.size(); i++) {
-			
+		for (int i = 0; i < leftFiles.size(); i++) {
+			File f1 = leftFiles.get(i);
+			File f2 = FileUtil.transformBasePath(leftFile, rightFile, f1);
+			if (f1.exists() && f2.exists()) {
+				common1.add(f1);
+				common2.add(f2);
+			}			
 		}
 		
 		PrintList("DELETED: ", deleted);
 		PrintList("CREATED: ", created);
 		PrintList("COMMON1: ", common1);
-		PrintList("COMMON2: ", common1);
+		PrintList("COMMON2: ", common2);
 		
 		// Process common files
 		// 1 - filter
@@ -97,9 +102,9 @@ public class SFCEngine {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String left = "d:\\REPOSITORIOS\\INFA\\0_AT\\srv-nuc-jee\\srv-nuc-jee-SPServiceSPIntTask\\tags\\6.9.0-1-3\\";
-		String right = "d:\\REPOSITORIOS\\INFA\\1_CO\\srv-nuc-jee\\srv-nuc-jee-SPServiceSPIntTask\\trunk\\";
-		String configFile = "k:\\MisProyectos\\smart_file_comparator\\src\\test\\resources\\config.sample.yaml";
+		String left = "./src/test/resources/left";
+		String right = "./src/test/resources/right";
+		String configFile = "./src/test/resources/config.sample.yaml";
 		SFCEngine engine = new SFCEngine(configFile, left, right, null);
 		engine.run();
 	}

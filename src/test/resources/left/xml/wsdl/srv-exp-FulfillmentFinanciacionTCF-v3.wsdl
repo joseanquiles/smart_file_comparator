@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+    targetNamespace="http://telefonica.com/terc/srv-exp-FulfillmentFinanciacionTCF-v3"
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:cabecera="http://telefonica.com/tran/comarq/cc/cabecera"
+    xmlns:fault="http://telefonica.com/tran/comarq/cc/error/fault"
+    xmlns:metadatos="http://telefonica.com/tran/comarq/cc/metadatos-2.0"
+    xmlns:fulfillmentFinanciacionTCF="http://telefonica.com/terc/srv/FulfillmentFinanciacionTCF/msg/fulfillmentFinanciacionTCF-v3"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://telefonica.com/terc/srv-exp-FulfillmentFinanciacionTCF-v3"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <!-- Tipos -->
+    <types>
+        <xsd:schema>
+            <xsd:import
+                namespace="http://telefonica.com/tran/comarq/cc/cabecera" schemaLocation="../../../coco/lib-osb-Resources-v1/xsd/TE_Cabecera.xsd"/>
+        </xsd:schema>
+        <xsd:schema>
+            <xsd:import
+                namespace="http://telefonica.com/tran/comarq/cc/metadatos-2.0" schemaLocation="../../../coco/lib-osb-Resources-v1/xsd/TE_Metadatos-2.0.xsd"/>
+        </xsd:schema>
+        <xsd:schema>
+            <xsd:import
+                namespace="http://telefonica.com/tran/comarq/cc/error/fault" schemaLocation="../../../coco/lib-osb-Resources-v1/xsd/FaultDetail.xsd"/>
+        </xsd:schema>
+       <xsd:schema>
+            <xsd:import
+                namespace="http://telefonica.com/terc/srv/FulfillmentFinanciacionTCF/msg/fulfillmentFinanciacionTCF-v3" schemaLocation="../xsd/OP_fulfillmentFinanciacionTCF-v3.xsd"/>
+        </xsd:schema>
+   
+   
+    </types>
+    <!-- Mensajes del WSDL -->
+    <wsdl:message name="TECabecera_MSG">
+        <wsdl:part element="cabecera:TE_Cabecera" name="te_header"/>
+    </wsdl:message>
+    <wsdl:message name="TEMetadatos_MSG">
+        <wsdl:part element="metadatos:TE_Metadatos" name="te_metadata"/>
+    </wsdl:message>
+    <wsdl:message name="FaultDetail_MSG">
+        <wsdl:part element="fault:FaultDetail" name="error"/>
+    </wsdl:message>
+    <wsdl:message name="fulfillmentFinanciacionTCF_MSGIN">
+        <wsdl:part
+            element="fulfillmentFinanciacionTCF:FulfillmentFinanciacionTCF_IN" name="request"/>
+    </wsdl:message>
+    <wsdl:message name="fulfillmentFinanciacionTCF_MSGOUT">
+        <wsdl:part
+            element="fulfillmentFinanciacionTCF:FulfillmentFinanciacionTCF_OUT" name="response"/>
+    </wsdl:message>
+    <!-- PortType -->
+    <portType name="srv-exp-FulfillmentFinanciacionTCF_PortType">
+        <wsdl:operation name="fulfillmentFinanciacionTCF">
+            <wsdl:input message="tns:fulfillmentFinanciacionTCF_MSGIN"/>
+            <wsdl:output message="tns:fulfillmentFinanciacionTCF_MSGOUT"/>
+            <wsdl:fault message="tns:FaultDetail_MSG" name="error"/>
+        </wsdl:operation>
+    </portType>
+    <!-- Binding -->
+    <binding name="srv-exp-FulfillmentFinanciacionTCF_Binding" type="tns:srv-exp-FulfillmentFinanciacionTCF_PortType">
+      <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="fulfillmentFinanciacionTCF">
+            <soap:operation soapAction="fulfillmentFinanciacionTCF"/>
+            <wsdl:input>
+                <soap:header message="tns:TECabecera_MSG"
+                    part="te_header" use="literal"/>
+                <soap:header message="tns:TEMetadatos_MSG"
+                    part="te_metadata" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:header message="tns:TECabecera_MSG"
+                    part="te_header" use="literal"/>
+                <soap:header message="tns:TEMetadatos_MSG"
+                    part="te_metadata" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="error">
+                <soap:fault name="error" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </binding>
+  
+    <!-- Servicio -->
+    <service name="srv-exp-FulfillmentFinanciacionTCF-v3">
+        <port binding="tns:srv-exp-FulfillmentFinanciacionTCF_Binding" name="srv-exp-FulfillmentFinanciacionTCF_Port">
+            <soap:address location="No Target Address"/>
+        </port>
+    </service>
+</definitions>
