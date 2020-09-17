@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.joseanquiles.sfc.comparator.SFCComparator;
 import com.joseanquiles.sfc.configuration.FileComparatorConfiguration;
+import com.joseanquiles.sfc.filter.SFCFilter;
 import com.joseanquiles.sfc.util.FileUtil;
 
 public class SFCEngine {
@@ -87,10 +89,44 @@ public class SFCEngine {
 		PrintList("CREATED: ", created);
 		PrintList("COMMON1: ", common1);
 		PrintList("COMMON2: ", common2);
-		
+				
 		// Process common files
 		// 1 - filter
 		// 2 - compare
+		
+		for (int i = 0; i < common1.size(); i++) {
+			
+			try {
+				File f1 = common1.get(i);
+				File f2 = common2.get(i);
+
+				// read files
+				List<String> f1Lines = FileUtil.file2Lines(f1);
+				List<String> f2Lines = FileUtil.file2Lines(f2);
+				
+				// FILTERS
+				
+				List<SFCFilter> f1Filters = this.config.getFiltersForFile(f1);
+				List<SFCFilter> f2Filters = this.config.getFiltersForFile(f2);
+				
+				for (int f = 0; f < f1Filters.size(); f++) {
+					f1Lines = f1Filters.get(f).run(f1Lines);
+					f2Lines = f2Filters.get(f).run(f2Lines);
+				}
+
+				// COMPARATORS
+				
+				List<SFCComparator> f1Comparators = this.config.getComparatorsForFile(f1);
+				
+				for (int c = 0; c < f1Comparators.size(); c++) {
+					List<String> diffs = f1Comparators.get(c).run(f1Lines, f2Lines);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+						
+		}
 				
 	}
 	
@@ -104,7 +140,7 @@ public class SFCEngine {
 	public static void main(String[] args) throws Exception {
 		String left = "./src/test/resources/left";
 		String right = "./src/test/resources/right";
-		String configFile = "./src/test/resources/config.sample.yaml";
+		String configFile = "./src/test/resources/config.test.yaml";
 		SFCEngine engine = new SFCEngine(configFile, left, right, null);
 		engine.run();
 	}

@@ -69,6 +69,12 @@ file-types:
   - name: IgnoreBlankPlugin
     enabled: true
 
+# pom.xml
+- patterns:
+  - pom.xml
+  filters:
+  comparators:
+
 # xml and html plugins
 - patterns:
   - xml
