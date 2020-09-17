@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -201,6 +202,16 @@ public class FileComparatorConfiguration {
 						ftc.comparators.add(pc);
 					}
 				}
+				
+				// if no comparators configured => set PlainComparator
+				if (ftc.comparators.size() == 0) {
+					ComparatorConfiguration pc = new ComparatorConfiguration();
+					pc.name = "com.joseanquiles.sfc.comparator.PlainComparator";
+					pc.enabled = true;
+					pc.parameters = new HashMap<String, String>();
+					ftc.comparators.add(pc);
+				}
+				
 				this.fileTypes.add(ftc);
 			}
 		}

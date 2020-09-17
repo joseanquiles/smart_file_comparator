@@ -120,6 +120,7 @@ public class SFCEngine {
 				
 				for (int c = 0; c < f1Comparators.size(); c++) {
 					List<String> diffs = f1Comparators.get(c).run(f1Lines, f2Lines);
+					PrintStrList("COMPARE: " + f1.getPath() + " vs " + f2.getPath(), diffs);
 				}
 
 			} catch (Exception e) {
@@ -136,7 +137,14 @@ public class SFCEngine {
 			System.out.println(list.get(i));
 		}
 	}
-	
+
+	private static final void PrintStrList(String msg, List<String> list) {
+		System.out.println(msg);
+		for (int i = 0; i < list.size(); i++) {
+			System.out.println(list.get(i));
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 		String left = "./src/test/resources/left";
 		String right = "./src/test/resources/right";
