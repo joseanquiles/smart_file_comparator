@@ -3,9 +3,9 @@ package com.joseanquiles.sfc.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-class PluginConfiguration {
+class ComparatorConfiguration {
 
-	String pluginName = null;
+	String name = null;
 	
 	boolean enabled = true;
 	

@@ -41,15 +41,23 @@ public class FileUtil {
 	}
 	
 	public static File transformBasePath(File baseFrom, File baseTo, File filename) {
-		String bf = baseFrom.getPath();
-		String bt = baseTo.getPath();
+		String bf = getDirectory(baseFrom);
+		String bt = getDirectory(baseTo);
 		String fn = filename.getPath();
 		return new File(fn.replace(bf, bt));
 	}
 	
+	private static String getDirectory(File f) {
+		if (f.isFile()) {
+			return f.getParent();
+		} else {
+			return f.getPath();
+		}
+	}
+	
 	private static boolean ignoreFile(File file, List<String> ignoreFiles) {
 		for (int i = 0; i < ignoreFiles.size(); i++) {
-			if (file.getName().endsWith(ignoreFiles.get(i))) {
+			if (file.getName().matches(ignoreFiles.get(i))) {
 				return true;
 			}
 		}
@@ -63,7 +71,6 @@ public class FileUtil {
 				File df = new File(ignoreDirs.get(i));
 				try {
 					if (dir.getCanonicalPath().equals(df.getCanonicalPath())) {
-						//System.out.println("*** IGNORE ***" + dir);
 						return;
 					}					
 				} catch (Exception e) {
@@ -82,6 +89,34 @@ public class FileUtil {
 			fileList.add(dir);
 			return;
 		}
+	}
+	
+	public static void main(String[] args) {
+		File f1 = new File("D:/a/b/c/file.txt");
+		File f2 = new File("E:/a/x/g/file.txt");
+		File d1 = new File("D:/a/b/c/");
+		File d2 = new File("E:/a/x/g");
+		System.out.println("PARENT OF FILE: " + f1.getParent() + "," + f2.getParent());
+		System.out.println("PATH OF FILE: " + f1.getPath() + "," + f2.getPath());
+		System.out.println("PARENT OF DIR: " + d1.getParent() + "," + d2.getParent());
+		System.out.println("PATH OF DIR: " + d1.getPath() + "," + d2.getPath());
+		
+		File t = FileUtil.transformBasePath(d1,  d2, f1);
+		System.out.println("TRANSFORMED: " + f1 + " -> " + t);
+		t = FileUtil.transformBasePath(f1,  f2, f1);
+		System.out.println("TRANSFORMED: " + f1 + " -> " + t);
+		
+		List<String> ignoreFiles = new ArrayList<>();
+		ignoreFiles.add(".*\\.class$");
+		ignoreFiles.add(".*\\.docx$");
+		ignoreFiles.add(".*\\.doc$");
+		ignoreFiles.add("\\.classpath$");
+		ignoreFiles.add("\\.project$");
+		
+		System.out.println(ignoreFile(new File("D:/a/b/c/a.doc"), ignoreFiles));
+		System.out.println(ignoreFile(new File("D:/a/b/c/.classpath"), ignoreFiles));
+		System.out.println(ignoreFile(new File("D:/a/b/c/.project"), ignoreFiles));
+		System.out.println(ignoreFile(new File("D:/a/b/c/d/test.java"), ignoreFiles));
 	}
 	
 }

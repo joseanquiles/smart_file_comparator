@@ -9,15 +9,13 @@ import java.util.Map;
 
 import org.yaml.snakeyaml.Yaml;
 
+import com.joseanquiles.sfc.comparator.SFCComparator;
 import com.joseanquiles.sfc.filter.SFCFilter;
-import com.joseanquiles.sfc.util.FileUtil;
 
 public class FileComparatorConfiguration {
 
 	String name = "";
 	String description = "";
-	String source = "";
-	String target = "";
 	String outputFile = null;
 	List<String> ignoreFiles = new ArrayList<>();
 	List<String> ignoreDirs = new ArrayList<>();
@@ -29,14 +27,6 @@ public class FileComparatorConfiguration {
 	
 	public String getDescription() {
 		return this.description;
-	}
-	
-	public String getSource() {
-		return this.source;
-	}
-	
-	public String getTarget() {
-		return this.target;
 	}
 	
 	public String getOutputFile() {
@@ -51,14 +41,14 @@ public class FileComparatorConfiguration {
 		return this.ignoreDirs;
 	}
 
-	public List<SFCFilter> getPluginsForFile(File file) throws Exception {
+	public List<SFCFilter> getFiltersForFile(File file) throws Exception {
 		FileTypeConfiguration ftc = matchFileType(file);
 		List<SFCFilter> result = new ArrayList<>();
-		for (int i = 0; i < ftc.plugins.size(); i++) {
-			PluginConfiguration pc = ftc.plugins.get(i);
+		for (int i = 0; i < ftc.filters.size(); i++) {
+			FilterConfiguration pc = ftc.filters.get(i);
 			
 			// plugin object
-			Class<?> clazz = Class.forName(pc.pluginName);
+			Class<?> clazz = Class.forName(pc.name);
 			Constructor<?> ctor = clazz.getConstructor();
 			SFCFilter plugin = (SFCFilter)ctor.newInstance();
 			
@@ -69,13 +59,32 @@ public class FileComparatorConfiguration {
 		}
 		return result;
 	}
-	
+
+	public List<SFCComparator> getComparatorsForFile(File file) throws Exception {
+		FileTypeConfiguration ftc = matchFileType(file);
+		List<SFCComparator> result = new ArrayList<>();
+		for (int i = 0; i < ftc.comparators.size(); i++) {
+			ComparatorConfiguration pc = ftc.comparators.get(i);
+			
+			// plugin object
+			Class<?> clazz = Class.forName(pc.name);
+			Constructor<?> ctor = clazz.getConstructor();
+			SFCComparator plugin = (SFCComparator)ctor.newInstance();
+			
+			// parameters
+			plugin.setParameters(pc.parameters);
+			
+			result.add(plugin);
+		}
+		return result;
+	}
+
 	private FileTypeConfiguration matchFileType(File file) {
-		String ext = FileUtil.getFileExtension(file.getName());
-		for (int i = 0; ext.length() > 0 && i < this.fileTypes.size(); i++) {
+		String filename = file.getName();
+		for (int i = 0; filename.length() > 0 && i < this.fileTypes.size(); i++) {
 			FileTypeConfiguration ftc = this.fileTypes.get(i);
-			for (int j = 0; j < ftc.extensions.size(); j++) {
-				if (ext.equalsIgnoreCase(ftc.extensions.get(j))) {
+			for (int j = 0; j < ftc.patterns.size(); j++) {
+				if (filename.matches(ftc.patterns.get(j))) {
 					return ftc;
 				}
 			}
@@ -83,14 +92,14 @@ public class FileComparatorConfiguration {
 		// No matching found, return default configuration
 		for (int i = 0; i < this.fileTypes.size(); i++) {
 			FileTypeConfiguration ftc = this.fileTypes.get(i);
-			for (int j = 0; j < ftc.extensions.size(); j++) {
-				if ("default-conf".equalsIgnoreCase(ftc.extensions.get(j))) {
+			for (int j = 0; j < ftc.patterns.size(); j++) {
+				if ("default-conf".equalsIgnoreCase(ftc.patterns.get(j))) {
 					return ftc;
 				}
 			}
 		}
 		FileTypeConfiguration ftc = new FileTypeConfiguration();
-		ftc.extensions.add("default-conf");
+		ftc.patterns.add("default-conf");
 		return ftc;
 		
 	}
@@ -121,16 +130,7 @@ public class FileComparatorConfiguration {
 		
 		this.name = (String)yamlMap.get("name");
 		this.description = (String)yamlMap.get("description");
-		this.source = (String)yamlMap.get("source");
-		this.target = (String)yamlMap.get("target");
 		this.outputFile = (String)yamlMap.get("output-file");
-
-		if (this.source == null) {
-			throw new Exception("source is mandatory");
-		}
-		if (this.target == null) {
-			throw new Exception("target is mandatory");
-		}
 
 		List<Object> ignoreList = (List<Object>)yamlMap.get("ignore-files");
 		if (ignoreList != null) {
@@ -151,21 +151,21 @@ public class FileComparatorConfiguration {
 			for (int i = 0; i < filetypesList.size(); i++) {
 				FileTypeConfiguration ftc = new FileTypeConfiguration();
 				Map<String, Object> filetypeMap = (Map<String, Object>)filetypesList.get(i);
-				List<Object> extensionsList = (List<Object>)filetypeMap.get("extensions");
-				if (extensionsList != null) {
-					for (int j = 0; j < extensionsList.size(); j++) {
-						ftc.extensions.add((String)extensionsList.get(j));
+				List<Object> patternsList = (List<Object>)filetypeMap.get("patterns");
+				if (patternsList != null) {
+					for (int j = 0; j < patternsList.size(); j++) {
+						ftc.patterns.add((String)patternsList.get(j));
 					}
 				}
-				List<Object> pluginsList = (List<Object>)filetypeMap.get("plugins");
-				if (pluginsList != null) {
-					for (int j = 0; pluginsList != null && j < pluginsList.size(); j++) {
-						PluginConfiguration pc = new PluginConfiguration();
-						Map<String, Object> pluginMap = (Map<String, Object>)pluginsList.get(j);
-						pc.pluginName = (String)pluginMap.get("name");
+				List<Object> filtersList = (List<Object>)filetypeMap.get("filters");
+				if (filtersList != null) {
+					for (int j = 0; filtersList != null && j < filtersList.size(); j++) {
+						FilterConfiguration pc = new FilterConfiguration();
+						Map<String, Object> pluginMap = (Map<String, Object>)filtersList.get(j);
+						pc.name = (String)pluginMap.get("name");
 						// built-in plugins 
-						if (!pc.pluginName.contains(".")) {
-							pc.pluginName = "com.joseanquiles.comparator.plugin." + pc.pluginName;
+						if (!pc.name.contains(".")) {
+							pc.name = "com.joseanquiles.sfc.filter." + pc.name;
 						}
 						pc.enabled = pluginMap.get("enabled") != null ? (Boolean)pluginMap.get("enabled") : true;
 						List<Object> parametersList = (List<Object>)pluginMap.get("parameters");
@@ -176,7 +176,29 @@ public class FileComparatorConfiguration {
 							}	
 						}
 						
-						ftc.plugins.add(pc);
+						ftc.filters.add(pc);
+					}
+				}
+				List<Object> comparatorsList = (List<Object>)filetypeMap.get("comparators");
+				if (comparatorsList != null) {
+					for (int j = 0; comparatorsList != null && j < comparatorsList.size(); j++) {
+						ComparatorConfiguration pc = new ComparatorConfiguration();
+						Map<String, Object> pluginMap = (Map<String, Object>)filtersList.get(j);
+						pc.name = (String)pluginMap.get("name");
+						// built-in plugins 
+						if (!pc.name.contains(".")) {
+							pc.name = "com.joseanquiles.sfc.comparator." + pc.name;
+						}
+						pc.enabled = pluginMap.get("enabled") != null ? (Boolean)pluginMap.get("enabled") : true;
+						List<Object> parametersList = (List<Object>)pluginMap.get("parameters");
+						if (parametersList != null) {
+							for (int k = 0; parametersList != null && k < parametersList.size(); k++) {
+								Map<String, Object> parameterMap = (Map<String, Object>)parametersList.get(k);
+								pc.parameters.put((String)parameterMap.get("name"), (String)parameterMap.get("value"));
+							}	
+						}
+						
+						ftc.comparators.add(pc);
 					}
 				}
 				this.fileTypes.add(ftc);
@@ -187,8 +209,8 @@ public class FileComparatorConfiguration {
 		boolean found = false;
 		for (int i = 0; i < this.fileTypes.size(); i++) {
 			FileTypeConfiguration ftc = this.fileTypes.get(i);
-			for (int j = 0; j < ftc.extensions.size(); j++) {
-				if ("default-conf".equalsIgnoreCase(ftc.extensions.get(j))) {
+			for (int j = 0; j < ftc.patterns.size(); j++) {
+				if ("default-conf".equalsIgnoreCase(ftc.patterns.get(j))) {
 					found = true;
 					break;
 				}
@@ -196,7 +218,7 @@ public class FileComparatorConfiguration {
 		}
 		if (!found) {
 			FileTypeConfiguration ftc = new FileTypeConfiguration();
-			ftc.extensions.add("default-conf");
+			ftc.patterns.add("default-conf");
 		}
 		
 	}

@@ -1,0 +1,80 @@
+#
+# SAMPLE FILE
+# Don't use accents!
+#
+
+#
+# CONFIGURATION STRUCTURE:
+#
+# String name
+# String description
+# String output-file
+# String[] ignore-files
+# String[] ignore-dirs
+# FileType[] file-types
+#     String[] patterns
+#     Filter[] filters
+#         String name
+#         boolean enabled
+#         Parameter[] parameters
+#             String name
+#             String value
+#     Comparator[] comparators
+#         String name
+#         boolean enabled
+#         Parameter[] parameters
+#             String name
+#             String value
+ 
+
+# project name and description (optional)
+name: sample
+description: sample config file
+
+# report output file (optional)
+output-file:
+
+# list of ignored files (regular expression)
+ignore-files:
+- .*\.class$
+- .*\.docx$
+- .*\.doc$
+- \.classpath$
+- \.project$
+
+# list of ignored directories
+ignore-dirs:
+- ./target
+
+# configuration for every file type
+file-types:
+
+# default configuration
+- patterns:
+  - default-conf
+
+# java plugins
+- patterns:
+  - java
+  filters:
+  - name: IgnoreRegularExpressionPlugin
+    enabled: true
+    parameters:
+    - name: regexp
+      value: ^@Generated\(.*
+  - name: IgnoreMultilineCommentsPlugin
+    enabled: true
+  - name: IgnoreSingleLineCommentsPlugin
+    enabled: true
+  - name: IgnoreBlankPlugin
+    enabled: true
+
+# xml and html plugins
+- patterns:
+  - xml
+  - html
+  filters:
+  - name: IgnoreXmlCommentsPlugin
+    enabled: true
+  - name: IgnoreBlankPlugin
+    enabled: true

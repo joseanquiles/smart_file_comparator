@@ -5,8 +5,10 @@ import java.util.List;
 
 class FileTypeConfiguration {
 
-	List<String> extensions = new ArrayList<>();
+	List<String> patterns = new ArrayList<>();
 	
-	List<PluginConfiguration> plugins = new ArrayList<>();
+	List<FilterConfiguration> filters = new ArrayList<>();
 	
+	List<ComparatorConfiguration> comparators = new ArrayList<>();
+
 }
