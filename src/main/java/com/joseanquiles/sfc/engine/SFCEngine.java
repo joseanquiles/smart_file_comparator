@@ -49,8 +49,8 @@ public class SFCEngine {
 		}
 		
 		
-		List<File> deleted = new ArrayList<File>();
-		List<File> created = new ArrayList<File>();
+		List<File> newFiles = new ArrayList<File>();
+		List<File> oldFiles = new ArrayList<File>();
 		List<File> common1 = new ArrayList<File>();
 		List<File> common2 = new ArrayList<File>();
 		
@@ -59,10 +59,7 @@ public class SFCEngine {
 			File f1 = leftFiles.get(i);
 			File f2 = FileUtil.transformBasePath(leftFile, rightFile, f1);
 			if (!f2.exists()) {
-				deleted.add(f1);
-			} else {
-				//common1.add(f1);
-				//common2.add(f2);
+				newFiles.add(f1);
 			}
 		}
 
@@ -71,7 +68,7 @@ public class SFCEngine {
 			File f2 = rightFiles.get(i);
 			File f1 = FileUtil.transformBasePath(rightFile, leftFile, f2);
 			if (!f1.exists()) {
-				created.add(f2);
+				oldFiles.add(f2);
 			}
 		}
 
@@ -85,10 +82,10 @@ public class SFCEngine {
 			}			
 		}
 		
-		PrintList("DELETED: ", deleted);
-		PrintList("CREATED: ", created);
-		PrintList("COMMON1: ", common1);
-		PrintList("COMMON2: ", common2);
+		PrintFileList("NEW FILES: ", newFiles);
+		PrintFileList("OLD FILES: ", oldFiles);
+		PrintFileList("COMMON1: ", common1);
+		//PrintList("COMMON2: ", common2);
 				
 		// Process common files
 		// 1 - filter
@@ -131,7 +128,7 @@ public class SFCEngine {
 				
 	}
 	
-	private static final void PrintList(String msg, List<File> list) {
+	private static final void PrintFileList(String msg, List<File> list) {
 		System.out.println(msg);
 		for (int i = 0; i < list.size(); i++) {
 			System.out.println(list.get(i));
@@ -146,9 +143,9 @@ public class SFCEngine {
 	}
 
 	public static void main(String[] args) throws Exception {
-		String left = "./src/test/resources/left";
-		String right = "./src/test/resources/right";
-		String configFile = "./src/test/resources/config.test.yaml";
+		String left = "./src/test/resources/test1/left";
+		String right = "./src/test/resources/test1/right";
+		String configFile = "./src/test/resources/test1/sfc.config.yaml";
 		SFCEngine engine = new SFCEngine(configFile, left, right, null);
 		engine.run();
 	}
