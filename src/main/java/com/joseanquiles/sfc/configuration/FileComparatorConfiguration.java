@@ -152,6 +152,7 @@ public class FileComparatorConfiguration {
 			for (int i = 0; i < filetypesList.size(); i++) {
 				FileTypeConfiguration ftc = new FileTypeConfiguration();
 				Map<String, Object> filetypeMap = (Map<String, Object>)filetypesList.get(i);
+				ftc.name = (String)filetypeMap.get("name");
 				List<Object> patternsList = (List<Object>)filetypeMap.get("patterns");
 				if (patternsList != null) {
 					for (int j = 0; j < patternsList.size(); j++) {

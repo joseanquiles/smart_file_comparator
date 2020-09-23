@@ -31,8 +31,10 @@ public class SFCEngine {
 		
 	}
 	
-	public void run() {
+	public List<SFCResult> run() {
 
+		List<SFCResult> result = new ArrayList<>();
+		
 		List<File> leftFiles;
 		List<File> rightFiles;
 		
@@ -47,19 +49,17 @@ public class SFCEngine {
 			leftFiles = FileUtil.exploreDir(leftFile, config.getIgnoreFiles(), config.getIgnoreDirs());
 			rightFiles = FileUtil.exploreDir(rightFile, config.getIgnoreFiles(), config.getIgnoreDirs());			
 		}
-		
-		
-		List<File> newFiles = new ArrayList<File>();
-		List<File> oldFiles = new ArrayList<File>();
-		List<File> common1 = new ArrayList<File>();
-		List<File> common2 = new ArrayList<File>();
-		
+				
 		// STEP 1: files in left not in right
 		for (int i = 0; i < leftFiles.size(); i++) {
 			File f1 = leftFiles.get(i);
 			File f2 = FileUtil.transformBasePath(leftFile, rightFile, f1);
 			if (!f2.exists()) {
-				newFiles.add(f1);
+				SFCResult r = new SFCResult();
+				r.leftFile = f1;
+				r.rightFile = null;
+				r.status = SFCStatus.LEFT;
+				result.add(r);
 			}
 		}
 
@@ -68,11 +68,17 @@ public class SFCEngine {
 			File f2 = rightFiles.get(i);
 			File f1 = FileUtil.transformBasePath(rightFile, leftFile, f2);
 			if (!f1.exists()) {
-				oldFiles.add(f2);
+				SFCResult r = new SFCResult();
+				r.leftFile = null;
+				r.rightFile = f2;
+				r.status = SFCStatus.RIGHT;
+				result.add(r);
 			}
 		}
 
 		// STEP 3: files in both, left and right
+		List<File> common1 = new ArrayList<File>();
+		List<File> common2 = new ArrayList<File>();
 		for (int i = 0; i < leftFiles.size(); i++) {
 			File f1 = leftFiles.get(i);
 			File f2 = FileUtil.transformBasePath(leftFile, rightFile, f1);
@@ -81,12 +87,7 @@ public class SFCEngine {
 				common2.add(f2);
 			}			
 		}
-		
-		PrintFileList("NEW FILES: ", newFiles);
-		PrintFileList("OLD FILES: ", oldFiles);
-		PrintFileList("COMMON1: ", common1);
-		//PrintList("COMMON2: ", common2);
-				
+						
 		// Process common files
 		// 1 - filter
 		// 2 - compare
@@ -115,39 +116,38 @@ public class SFCEngine {
 				
 				List<SFCComparator> f1Comparators = this.config.getComparatorsForFile(f1);
 				
+				SFCResult r = new SFCResult();
+				r.leftFile = f1;
+				r.rightFile = f2;
 				for (int c = 0; c < f1Comparators.size(); c++) {
 					List<String> diffs = f1Comparators.get(c).run(f1Lines, f2Lines);
-					PrintStrList("COMPARE: " + f1.getPath() + " vs " + f2.getPath(), diffs);
+					if (diffs.size() > 0) {
+						r.status = SFCStatus.DIFFERENT;
+						for (int d = 0; d < diffs.size(); d++) {
+							r.differences.add(diffs.get(d));
+						}
+					}
 				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-						
+
 		}
+		
+		return result;
 				
 	}
 	
-	private static final void PrintFileList(String msg, List<File> list) {
-		System.out.println(msg);
-		for (int i = 0; i < list.size(); i++) {
-			System.out.println(list.get(i));
-		}
-	}
-
-	private static final void PrintStrList(String msg, List<String> list) {
-		System.out.println(msg);
-		for (int i = 0; i < list.size(); i++) {
-			System.out.println(list.get(i));
-		}
-	}
-
 	public static void main(String[] args) throws Exception {
 		String left = "./src/test/resources/test1/left";
 		String right = "./src/test/resources/test1/right";
 		String configFile = "./src/test/resources/test1/sfc.config.yaml";
 		SFCEngine engine = new SFCEngine(configFile, left, right, null);
-		engine.run();
+		List<SFCResult> result = engine.run();
+		for (int i = 0; i < result.size(); i++) {
+			System.out.println(result.get(i));
+		}
 	}
 	
 }
