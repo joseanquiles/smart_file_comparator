@@ -128,6 +128,9 @@ public class SFCEngine {
 						}
 					}
 				}
+				if (r.status == SFCStatus.DIFFERENT) {
+					result.add(r);
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -12,6 +12,7 @@
 # String[] ignore-files
 # String[] ignore-dirs
 # FileType[] file-types
+#     String name
 #     String[] patterns
 #     Filter[] filters
 #         String name
@@ -50,37 +51,41 @@ ignore-dirs:
 file-types:
 
 # default configuration
-- patterns:
+- name: default configuration
+  patterns:
   - default-conf
 
-# java plugins
-- patterns:
-  - java
+# java
+- name: java files
+  patterns:
+  - .*\.java$
   filters:
-#  - name: IgnoreRegularExpressionPlugin
-#    enabled: true
-#    parameters:
-#    - name: regexp
-#      value: ^@Generated\(.*
-  - name: IgnoreMultilineCommentsPlugin
+  - name: IgnoreRegularExpressionFilter
     enabled: true
-#  - name: IgnoreSingleLineCommentsPlugin
-#    enabled: true
-#  - name: IgnoreBlankPlugin
-#    enabled: true
+    parameters:
+    - name: regexp
+      value: ^@Generated\(.*
+  - name: IgnoreMultilineCommentsFilter
+    enabled: true
+  - name: IgnoreSingleLineCommentsFilter
+    enabled: true
+  - name: IgnoreBlankFilter
+    enabled: true
 
 # pom.xml
-- patterns:
-  - pom.xml
+- name: pom.xml
+  patterns:
+  - pom\.xml$
   filters:
   comparators:
 
-# xml and html plugins
-- patterns:
-  - xml
-  - html
+# xml and html
+- name: xml files
+  patterns:
+  - .*\.xml$
+  - .*\.html$
   filters:
-  - name: IgnoreXmlCommentsPlugin
+  - name: IgnoreXmlCommentsFilter
     enabled: true
-  - name: IgnoreBlankPlugin
+  - name: IgnoreBlankFilter
     enabled: true

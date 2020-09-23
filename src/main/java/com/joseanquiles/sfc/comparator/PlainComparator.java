@@ -22,7 +22,7 @@ public class PlainComparator implements SFCComparator {
 			String line1 = leftLines.get(i);
 			String line2 = rightLines.get(i);
 			if (!line1.equals(line2)) {
-				diffs.add("    " + line1 + "\n    " + line2);
+				diffs.add("[" + line1 + "] != [" + line2 + "]");
 			}
 		}
 		return diffs;
