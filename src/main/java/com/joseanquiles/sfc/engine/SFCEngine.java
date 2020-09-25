@@ -2,6 +2,8 @@ package com.joseanquiles.sfc.engine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.joseanquiles.sfc.comparator.SFCComparator;
@@ -137,6 +139,18 @@ public class SFCEngine {
 			}
 
 		}
+		
+		// sort by path
+		// TODO
+		/*
+		Collections.sort(result, new Comparator<SFCResult>() {
+
+			@Override
+			public int compare(SFCResult o1, SFCResult o2) {
+			}
+
+		});
+		*/
 		
 		return result;
 				

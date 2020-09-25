@@ -185,7 +185,7 @@ public class FileComparatorConfiguration {
 				if (comparatorsList != null) {
 					for (int j = 0; comparatorsList != null && j < comparatorsList.size(); j++) {
 						ComparatorConfiguration pc = new ComparatorConfiguration();
-						Map<String, Object> pluginMap = (Map<String, Object>)filtersList.get(j);
+						Map<String, Object> pluginMap = (Map<String, Object>)comparatorsList.get(j);
 						pc.name = (String)pluginMap.get("name");
 						// built-in plugins 
 						if (!pc.name.contains(".")) {

@@ -78,6 +78,10 @@ file-types:
   - pom\.xml$
   filters:
   comparators:
+  - name: MavenPomComparator
+    enabled: true
+  - name: PlainComparator
+    enabled: true
 
 # xml and html
 - name: xml files
