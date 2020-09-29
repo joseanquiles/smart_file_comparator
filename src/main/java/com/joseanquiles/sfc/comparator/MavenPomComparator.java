@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.joseanquiles.sfc.util.FileUtil;
+
 import garcia.herrero.elena.model.PomComparation;
 import garcia.herrero.elena.service.PomService;
 
@@ -26,8 +28,8 @@ public class MavenPomComparator implements SFCComparator {
 
 		try {
 		    
-			String leftFile = writeLinesToTmpFile("left_", leftLines);
-			String rightFile = writeLinesToTmpFile("right_", rightLines);
+			String leftFile = FileUtil.writeLinesToTmpFile("left_", leftLines);
+			String rightFile = FileUtil.writeLinesToTmpFile("right_", rightLines);
 		    		
 			PomService pomService = new PomService();
 		    Map<String, String> sortedDependenciesForPom1 = pomService.getSortedDependencies(new FileReader(leftFile));
@@ -52,20 +54,4 @@ public class MavenPomComparator implements SFCComparator {
 		return result;
 	}
 	
-	private static String writeLinesToTmpFile(String prefix, List<String> lines) throws IOException {
-	    // create temporal file
-	    File file = File.createTempFile(prefix, ".tmp");
-
-	    FileOutputStream fos = new FileOutputStream(file);
-	    
-	    for (int i = 0; i < lines.size(); i++) {
-	    	fos.write(lines.get(i).getBytes());
-	    	fos.write("\n".getBytes());
-	    }
-	    
-	    fos.close();
-	    
-	    return file.toString();
-	}
-
 }

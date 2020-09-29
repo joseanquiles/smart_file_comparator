@@ -93,3 +93,16 @@ file-types:
     enabled: true
   - name: IgnoreBlankFilter
     enabled: true
+    
+# xsd
+- name: xsd files
+  patterns:
+  - .*\.xsd$
+  filters:
+  - name: IgnoreXmlCommentsFilter
+    enabled: true
+  - name: IgnoreBlankFilter
+    enabled: true
+  comparators:
+  - name: XmlComparator
+    enabled: true

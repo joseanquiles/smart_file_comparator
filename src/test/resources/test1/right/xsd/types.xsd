@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="unqualified"
+ targetNamespace="http://na.telefonica.com/V6F0071"
+ xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <annotation>
+  <documentation>Generated automatically</documentation>
+ </annotation>
+ <xsd:complexType name="V6F0071I">
+  <xsd:sequence>
+   <xsd:element maxOccurs="1" minOccurs="0" name="CO-PROCESO-MEN" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="25"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element maxOccurs="1" minOccurs="0" name="CO-SP-ORDER" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="38"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element maxOccurs="1" minOccurs="0" name="CO-MENSAJE-PORT" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="5"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element maxOccurs="1" minOccurs="0" name="CO-CSA-DNG-OPE" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="4"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element maxOccurs="1" minOccurs="0" name="DS-OBS-CAUSA-DNG" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="80"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element maxOccurs="1" minOccurs="0" name="DS-MENSAJE-PORT" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="80"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+   <xsd:element maxOccurs="1" minOccurs="0" name="NU-ADM-INST" nillable="false">
+    <xsd:simpleType>
+     <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="14"/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:element>
+  </xsd:sequence>
+ </xsd:complexType>
+ <xsd:complexType name="V6F0071O">
+  <xsd:sequence/>
+ </xsd:complexType>
+</schema>

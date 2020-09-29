@@ -2,6 +2,7 @@ package com.joseanquiles.sfc.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +47,23 @@ public class FileUtil {
 		String fn = filename.getPath();
 		return new File(fn.replace(bf, bt));
 	}
-	
+
+	public static String writeLinesToTmpFile(String prefix, List<String> lines) throws IOException {
+	    // create temporal file
+	    File file = File.createTempFile(prefix, ".tmp");
+
+	    FileOutputStream fos = new FileOutputStream(file);
+	    
+	    for (int i = 0; i < lines.size(); i++) {
+	    	fos.write(lines.get(i).getBytes());
+	    	fos.write("\n".getBytes());
+	    }
+	    
+	    fos.close();
+	    
+	    return file.toString();
+	}
+
 	private static String getDirectory(File f) {
 		if (f.isFile()) {
 			return f.getParent();
