@@ -1,7 +1,10 @@
 package com.joseanquiles.sfc;
 
+import java.util.List;
 import java.util.Map;
 
+import com.joseanquiles.sfc.engine.SFCEngine;
+import com.joseanquiles.sfc.engine.SFCResult;
 import com.joseanquiles.sfc.util.ArgsUtil;
 
 
@@ -56,6 +59,12 @@ public class Main {
 			String output = null;
 			if (argsMap.containsKey("o")) {
 				output = argsMap.get("o");
+			}
+			
+			SFCEngine engine = new SFCEngine(configFile, left, right, null);
+			List<SFCResult> result = engine.run();
+			for (int i = 0; i < result.size(); i++) {
+				System.out.println(result.get(i));
 			}
 
 		} catch (Exception e) {
