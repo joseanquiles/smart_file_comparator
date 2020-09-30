@@ -39,15 +39,25 @@ public class XmlComparator implements SFCComparator {
 			rightFile = FileUtil.writeLinesToTmpFile("right_", rightLines);
 
 			XmlNode leftDoc = parseXml(leftFile);
-			XmlNode rightDoc = parseXml(leftFile);
+			XmlNode rightDoc = parseXml(rightFile);
 			
 			// compare
 			
-			boolean compareResult = compare(leftDoc, rightDoc);
-			if (!compareResult) {
-				System.out.println("Different!!!");
-			} else {
-				System.out.println("Equal!!!");
+			Status compareResult = compare(leftDoc, rightDoc, result);
+			
+			if (compareResult == Status.EQUAL) {
+				// Find nodes not processed in right tree
+				XmlNode noProcessed = findNoProcessedNode(rightDoc);
+				if (noProcessed != null) {
+					result.add(noProcessed.toString());
+					compareResult = Status.RIGHT;
+				}
+			}
+			
+			if (compareResult == Status.LEFT) {
+				result.add(0, "LEFT");
+			} else if (compareResult == Status.RIGHT) {
+				result.add(0, "RIGHT");
 			}
 
 		} catch (Exception e) {
@@ -64,25 +74,73 @@ public class XmlComparator implements SFCComparator {
 		return result;
 	}
 	
-	private static boolean compare(XmlNode left, XmlNode right) {
-		if (!left.equals(right)) {
-			return false;
+	private static void resetTree(XmlNode node) {
+		node.processed = false;
+		for (int i = 0; i < node.children.size(); i++) {
+			XmlNode child = node.children.get(i);
+			child.processed = false;
+			resetTree(child);
 		}
+	}
+	
+	private static Status compare(XmlNode left, XmlNode right, List<String> diffs) {
+		if (!left.equals(right)) {
+			if (left.parent == null) {
+				diffs.add(left.toString());
+			}
+			return Status.LEFT;
+		} else {
+			left.processed = true;
+			right.processed = true;
+		}
+		
+		// check left tree
+		
 		for (int i = 0; i < left.children.size(); i++) {
 			XmlNode child1 = left.children.get(i);
 			if (child1.processed) {
 				continue;
 			}
+			XmlNode foundChild = null;
 			for (int j = 0; j < right.children.size(); j++) {
 				XmlNode child2 = right.children.get(j);
-				boolean c = compare(child1, child2);
-				if (!c) {
-					return false;
+				if (child2.processed) {
+					continue;
+				}
+				Status c = compare(child1, child2, diffs);
+				if (c == Status.EQUAL) {
+					foundChild = child2;
+					child1.processed = true;
+					child2.processed = true;
+					break;					
+				}
+			}
+			if (foundChild == null) {
+				diffs.add(child1.toString());
+				return Status.LEFT;
+			}
+		}
+		
+		return Status.EQUAL;
+	
+	}
+	
+	private static XmlNode findNoProcessedNode(XmlNode from) {
+		if (!from.processed) {
+			return from;
+		} else {
+			for (int i = 0; i < from.children.size(); i++) {
+				if (!from.children.get(i).processed) {
+					return from.children.get(i);
+				} else {
+					XmlNode n = findNoProcessedNode(from.children.get(i));
+					if (n != null) {
+						return n;
+					}
 				}
 			}
 		}
-		return true;
-	
+		return null;
 	}
 	
     private static XmlNode parseXml(String filename) throws Exception {
@@ -154,6 +212,12 @@ public class XmlComparator implements SFCComparator {
 
 }
 
+enum Status {
+	EQUAL,
+	LEFT,
+	RIGHT,
+}
+
 class XmlNode {
 	String name = "";
 	String namespace = "";
@@ -185,6 +249,15 @@ class XmlNode {
 					return false;
 				}
 			}
+			it = otherNode.attributes.keySet().iterator();
+			while (it.hasNext()) {
+				String key = it.next();
+				String value = otherNode.attributes.get(key);
+				String value2 = attributes.get(key);
+				if (value2 == null || !value2.equals(value)) {
+					return false;
+				}
+			}			
 			return true;
 		} else {
 			return false;
