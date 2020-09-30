@@ -26,10 +26,13 @@ public class MavenPomComparator implements SFCComparator {
 		
 		List<String> result = new ArrayList<>();
 
+		String leftFile = null;
+		String rightFile = null;
+		
 		try {
 		    
-			String leftFile = FileUtil.writeLinesToTmpFile("left_", leftLines);
-			String rightFile = FileUtil.writeLinesToTmpFile("right_", rightLines);
+			leftFile = FileUtil.writeLinesToTmpFile("left_", leftLines);
+			rightFile = FileUtil.writeLinesToTmpFile("right_", rightLines);
 		    		
 			PomService pomService = new PomService();
 		    Map<String, String> sortedDependenciesForPom1 = pomService.getSortedDependencies(new FileReader(leftFile));
@@ -49,6 +52,13 @@ public class MavenPomComparator implements SFCComparator {
 	        }			
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (leftFile != null) {
+				new File(leftFile).delete();
+			}
+			if (rightFile != null) {
+				new File(rightFile).delete();
+			}
 		}
 		
 		return result;
